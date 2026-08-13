@@ -44,14 +44,14 @@ def get_book_infos(session, url):
 
 def login(email, password):
 	session = requests.Session()
-	response = session.get("https://archive.org/services/account/login/")
+	response = session.get("https://archive.org/services/csrf-token")
 	login_data = response.json()
 	if not login_data['success']:
 		display_error(response, "[-] Error while getting login token:")
 
 	login_token = login_data["value"]["token"]
 
-	headers = {"Content-Type": "application/x-www-form-urlencoded"}
+	headers = {"Content-Type": "application/x-www-form-urlencoded", "X-Csrf-Token": login_token}
 	data = {"username":email, "password":password, "t": login_token}
 	
 	response = session.post("https://archive.org/services/account/login/", headers=headers, data=json.dumps(data))
